@@ -1,24 +1,21 @@
 const Attendance = require("../models/Attendance");
 
-const markAttendance = async (req, res) => {
-  try {
-    const { studentId, date, status } = req.body;
-    const attendance = new Attendance({ student: studentId, date, status });
-
-    await attendance.save();
-    res.status(201).json(attendance);
-  } catch (error) {
-    res.status(500).json({ message: "Error marking attendance" });
-  }
+exports.markAttendance = async (req, res) => {
+    try {
+        const { studentId, subject, status, date } = req.body;
+        const attendance = new Attendance({ studentId, subject, status, date });
+        await attendance.save();
+        res.status(201).json({ message: "Attendance marked successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
-const getAttendance = async (req, res) => {
-  try {
-    const attendance = await Attendance.find().populate("student");
-    res.json(attendance);
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving attendance" });
-  }
+exports.getAttendance = async (req, res) => {
+    try {
+        const attendanceRecords = await Attendance.find();
+        res.json(attendanceRecords);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
-
-module.exports = { markAttendance, getAttendance };

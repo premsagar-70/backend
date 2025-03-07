@@ -1,24 +1,21 @@
 const Student = require("../models/Student");
 
-const getStudents = async (req, res) => {
-  try {
-    const students = await Student.find();
-    res.json(students);
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving students" });
-  }
+exports.addStudent = async (req, res) => {
+    try {
+        const { name, rollNumber, department, year, semester } = req.body;
+        const newStudent = new Student({ name, rollNumber, department, year, semester });
+        await newStudent.save();
+        res.status(201).json({ message: "Student added successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
-const addStudent = async (req, res) => {
-  try {
-    const { name, rollNumber, course, year, section, password } = req.body;
-    const student = new Student({ name, rollNumber, course, year, section, password });
-
-    await student.save();
-    res.status(201).json(student);
-  } catch (error) {
-    res.status(500).json({ message: "Error adding student" });
-  }
+exports.getStudents = async (req, res) => {
+    try {
+        const students = await Student.find();
+        res.json(students);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
-
-module.exports = { getStudents, addStudent };
