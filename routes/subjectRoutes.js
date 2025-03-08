@@ -1,10 +1,13 @@
 const express = require("express");
-const { addSubject, getSubjects } = require("../controllers/subjectController");
+const { getAllSubjects, addSubject } = require("../controllers/subjectController");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.post("/", authMiddleware, addSubject);
-router.get("/", authMiddleware, getSubjects);
+// ✅ GET subjects (requires authentication)
+router.get("/", authMiddleware, getAllSubjects);
+
+// ✅ POST subject (only admin can add subjects)
+router.post("/add", authMiddleware, addSubject);
 
 module.exports = router;
