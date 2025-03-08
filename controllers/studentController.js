@@ -2,37 +2,38 @@ const Student = require("../models/Student");
 
 exports.addStudent = async (req, res) => {
     try {
-        const { name, rollNumber, email, password, year, semester, department, subjects } = req.body;
+        console.log("📩 Received student data:", req.body); // ✅ Log request data
 
-        // Check if required fields are provided
-        if (!name || !rollNumber || !email || !password || !year || !semester || !department || !subjects) {
+        const { name, rollNumber, email, password, department, year, semester, subjects } = req.body;
+
+        if (!name || !rollNumber || !password || !department || !year || !semester || !subjects.length) {
+            console.error("❌ Missing required fields");
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        // Hash password before saving (optional, if backend hashes passwords)
-        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log("✅ All fields are present, proceeding to create student...");
 
-        // Create student
         const newStudent = new Student({
             name,
             rollNumber,
             email,
-            password: hashedPassword, // Save hashed password
+            password,
+            department,
             year,
             semester,
-            department,
-            subjects,
+            subjects
         });
 
         await newStudent.save();
-        res.status(201).json({ message: "Student added successfully" });
+        console.log("🎉 Student created successfully:", newStudent);
+
+        res.status(201).json({ message: "Student added successfully", student: newStudent });
 
     } catch (error) {
-        console.error("❌ Error adding student:", error);
-        res.status(500).json({ message: "Server error" });
+        console.error("🔥 Error adding student:", error);
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 };
-
 
 exports.getStudents = async (req, res) => {
     try {
