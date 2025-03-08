@@ -4,7 +4,13 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+// ✅ Ensure frontend sends a valid token to access this
 router.post("/add", authMiddleware, addTeacher);
-router.get("/all", authMiddleware, getAllTeachers);
+
+// 🔴 Remove authMiddleware temporarily for testing
+router.get("/all", getAllTeachers); 
+
+// ✅ Route for frontend dropdown to get teachers
+router.get("/", getAllTeachers);
 
 module.exports = router;
