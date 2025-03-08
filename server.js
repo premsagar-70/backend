@@ -1,8 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const cors = require("cors");
-
+const cors = require("cors");  // ✅ Import CORS
 const authRoutes = require("./routes/authRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const staffRoutes = require("./routes/staffRoutes");
@@ -15,26 +14,24 @@ const app = express();
 
 app.use(express.json());
 
-// ✅ Configure CORS properly
-app.use(
-  cors({
-    origin: ["http://localhost:3000", "https://sretattendance1.netlify.app"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+// ✅ Fix CORS issue by allowing all origins temporarily
+app.use(cors({
+    origin: "*",  // 🔥 Allow all origins (change this for security)
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization"
+}));
 
 // Database connection
-mongoose
-  .connect(process.env.MONGO_URI, {
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  })
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+})
+.then(() => console.log("✅ MongoDB Connected"))
+.catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
-// Routes
+// ✅ Debugging: Check if routes are correctly set up
+console.log("✅ Routes Loaded...");
+
 app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/staff", staffRoutes);
