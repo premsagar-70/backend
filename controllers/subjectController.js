@@ -26,7 +26,14 @@ exports.addSubject = async (req, res) => {
 
 exports.getSubjects = async (req, res) => {
     try {
-        const subjects = await Subject.find().populate("teacher", "name _id");
+        const { department, year, semester } = req.query;
+
+        if (!department || !year || !semester) {
+            return res.status(400).json({ message: "Department, Year, and Semester are required" });
+        }
+
+        const subjects = await Subject.find({ department, year, semester });
+
         res.json(subjects);
     } catch (error) {
         console.error("Error fetching subjects:", error);
