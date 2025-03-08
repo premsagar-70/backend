@@ -1,13 +1,24 @@
 const express = require("express");
-const { getAllSubjects, addSubject } = require("../controllers/subjectController");
-const authMiddleware = require("../middleware/authMiddleware");
+const { getSubjects } = require("../controllers/subjectController");
+const authMiddleware = require("../middleware/authMiddleware"); // ✅ Ensure authentication
 
 const router = express.Router();
 
-// ✅ GET subjects (requires authentication)
-router.get("/", authMiddleware, getAllSubjects);
+// ✅ Fix: Require department, year, and semester
+router.get("/", authMiddleware, async (req, res) => {
+    const { department, year, semester } = req.query;
 
-// ✅ POST subject (only admin can add subjects)
-router.post("/add", authMiddleware, addSubject);
+    if (!department || !year || !semester) {
+        return res.status(400).json({ message: "Missing required parameters: department, year, and semester." });
+    }
+
+    try {
+        const subjects = await getSubjects(department, year, semester);
+        res.json(subjects);
+    } catch (error) {
+        console.error("❌ Error fetching subjects:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 
 module.exports = router;
