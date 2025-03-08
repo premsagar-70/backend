@@ -1,8 +1,10 @@
 const express = require("express");
-const router = express.Router();
-const { getSubjects, addSubject } = require("../controllers/subjectController"); // ✅ Ensure correct imports
+const { addSubject, getSubjects } = require("../controllers/subjectController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-router.get("/", getSubjects);  // ✅ Ensure function exists
-router.post("/", addSubject);  // ✅ Ensure function exists
+const router = express.Router();
+
+router.post("/", authMiddleware, addSubject);
+router.get("/", authMiddleware, getSubjects);
 
 module.exports = router;
