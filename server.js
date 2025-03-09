@@ -39,5 +39,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/subjects", subjectRoutes);
 
+app.use("/api/students", require("./routes/studentRoutes")); // ✅ Import student routes
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
