@@ -36,19 +36,21 @@ exports.login = async (req, res) => {
     }
 };
 
-
 exports.addStudent = async (req, res) => {
     try {
-        const { name, rollNumber, email, password, department, year, semester, subjects } = req.body;
+        const { name, rollNumber, password, department, year, semester, subjects } = req.body;
 
-        // ✅ Hash the password before saving
-        const hashedPassword = await bcrypt.hash(password, 10);
+        if (!name || !rollNumber || !password || !department || !year || !semester) {
+            return res.status(400).json({ message: "❌ All fields are required" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);  // ✅ Always hash password
 
         const newStudent = new Student({
             name,
             rollNumber,
-            email,
-            password: hashedPassword, // 🔥 Store hashed password instead of plain text
+            email: `${rollNumber}@sreerama.ac.in`, // ✅ Auto-generate email
+            password: hashedPassword, // ✅ Store hashed password
             department,
             year,
             semester,
@@ -56,13 +58,13 @@ exports.addStudent = async (req, res) => {
         });
 
         await newStudent.save();
-        res.status(201).json({ message: "Student added successfully" });
+        res.status(201).json({ message: "✅ Student created successfully" });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("🔥 Error adding student:", error);
+        res.status(500).json({ message: "Server error" });
     }
 };
-
 
 exports.getStudents = async (req, res) => {
     try {
