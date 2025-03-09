@@ -1,39 +1,51 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const Student = require("../models/Student");
 
-exports.addStudent = async (req, res) => {
+// ✅ Student Login Controller
+exports.login = async (req, res) => {
     try {
-        console.log("📩 Received student data:", req.body); // ✅ Log request data
+        const { email, password } = req.body;
+        console.log("📡 Student Login Request:", email);
 
-        const { name, rollNumber, email, password, department, year, semester, subjects } = req.body;
+        // ✅ Find student by email
+        const user = await Student.findOne({ email });
 
-        if (!name || !rollNumber || !password || !department || !year || !semester || !subjects.length) {
-            console.error("❌ Missing required fields");
-            return res.status(400).json({ message: "All fields are required" });
+        if (!user) {
+            console.log("❌ Student Not Found");
+            return res.status(400).json({ message: "❌ Invalid email or password" });
         }
 
-        console.log("✅ All fields are present, proceeding to create student...");
+        console.log("🔑 Stored Hashed Password:", user.password);
 
-        const newStudent = new Student({
-            name,
-            rollNumber,
-            email,
-            password,
-            department,
-            year,
-            semester,
-            subjects
-        });
+        // ✅ Compare entered password with stored hashed password
+        const isMatch = await bcrypt.compare(password, user.password);
 
-        await newStudent.save();
-        console.log("🎉 Student created successfully:", newStudent);
+        if (!isMatch) {
+            console.log("❌ Password does not match");
+            return res.status(400).json({ message: "❌ Invalid email or password" });
+        }
 
-        res.status(201).json({ message: "Student added successfully", student: newStudent });
+        console.log("✅ Password Matched. Generating Token...");
+
+        // ✅ Generate JWT Token
+        const token = jwt.sign(
+            { id: user._id, role: "student" },
+            process.env.JWT_SECRET,
+            { expiresIn: "3h" }
+        );
+
+        console.log("✅ Token Generated:", token);
+
+        res.json({ token, user });
 
     } catch (error) {
-        console.error("🔥 Error adding student:", error);
-        res.status(500).json({ message: "Internal Server Error", error: error.message });
+        console.error("🔥 Login Error:", error);
+        res.status(500).json({ message: "Server error" });
     }
 };
+
+
 
 exports.getStudents = async (req, res) => {
     try {
