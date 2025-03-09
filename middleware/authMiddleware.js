@@ -12,7 +12,7 @@ const authMiddleware = (req, res, next) => {
         if (token.startsWith("Bearer ")) {
             token = token.slice(7, token.length).trim();
         }
-
+        console.log("🔍 Received Token:", req.header("Authorization"));
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         console.log("✅ Token Verified:", verified); // Log verified user info
 
