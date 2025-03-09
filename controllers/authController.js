@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Staff = require("../models/Staff");
+const Student = require("../models/Student");
 
 const register = async (req, res) => {
     try {
@@ -39,8 +40,12 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "❌ Invalid email or password" });
         }
 
+        console.log("🔐 Hashed Password in DB:", user.password);
+        console.log("🔑 Entered Password:", password);
+
+        // ✅ Compare the stored hash with entered password
         const isMatch = await bcrypt.compare(password, user.password);
-        console.log("🔑 Password match:", isMatch);
+        console.log("✅ Password match result:", isMatch);
 
         if (!isMatch) {
             console.log("❌ Invalid password");
