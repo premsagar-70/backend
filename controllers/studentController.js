@@ -2,49 +2,55 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Student = require("../models/Student");
 
-// ✅ Student Login Controller
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log("📡 Student Login Request:", email);
-
-        // ✅ Find student by email
         const user = await Student.findOne({ email });
 
         if (!user) {
-            console.log("❌ Student Not Found");
             return res.status(400).json({ message: "❌ Invalid email or password" });
         }
 
-        console.log("🔑 Stored Hashed Password:", user.password);
-
-        // ✅ Compare entered password with stored hashed password
+        // ✅ Compare hashed password with entered password
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            console.log("❌ Password does not match");
             return res.status(400).json({ message: "❌ Invalid email or password" });
         }
 
-        console.log("✅ Password Matched. Generating Token...");
-
-        // ✅ Generate JWT Token
-        const token = jwt.sign(
-            { id: user._id, role: "student" },
-            process.env.JWT_SECRET,
-            { expiresIn: "3h" }
-        );
-
-        console.log("✅ Token Generated:", token);
-
+        const token = jwt.sign({ id: user._id, role: "student" }, process.env.JWT_SECRET, { expiresIn: "3h" });
         res.json({ token, user });
 
     } catch (error) {
-        console.error("🔥 Login Error:", error);
         res.status(500).json({ message: "Server error" });
     }
 };
 
+exports.addStudent = async (req, res) => {
+    try {
+        const { name, rollNumber, email, password, department, year, semester, subjects } = req.body;
+
+        // ✅ Hash the password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newStudent = new Student({
+            name,
+            rollNumber,
+            email,
+            password: hashedPassword, // 🔥 Store hashed password instead of plain text
+            department,
+            year,
+            semester,
+            subjects
+        });
+
+        await newStudent.save();
+        res.status(201).json({ message: "Student added successfully" });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 
 exports.getStudents = async (req, res) => {
