@@ -23,45 +23,38 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        console.log("🚀 Incoming Request: POST /api/auth/login");
-        console.log("🔹 Request Body:", req.body);
-
+        console.log("Incoming login request:", req.body); // ✅ Debugging
         const { email, password } = req.body;
+
         if (!email || !password) {
-            console.log("❌ Missing email or password");
             return res.status(400).json({ message: "Email and password are required" });
         }
 
-        const user = await Student.findOne({ email });
-        console.log("👤 User found:", user);
+        const user = await Staff.findOne({ email });
+        console.log("User found in DB:", user); // ✅ Debugging
 
         if (!user) {
-            console.log("❌ Invalid email");
             return res.status(400).json({ message: "❌ Invalid email or password" });
         }
 
-        console.log("🔐 Hashed Password in DB:", user.password);
-        console.log("🔑 Entered Password:", password);
-
-        // ✅ Compare the stored hash with entered password
         const isMatch = await bcrypt.compare(password, user.password);
-        console.log("✅ Password match result:", isMatch);
+        console.log("Password match result:", isMatch); // ✅ Debugging
 
         if (!isMatch) {
-            console.log("❌ Invalid password");
             return res.status(400).json({ message: "❌ Invalid email or password" });
         }
 
-        const token = jwt.sign({ id: user._id, role: "student" }, process.env.JWT_SECRET, { expiresIn: "3h" });
-        console.log("✅ Token Generated:", token);
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "3h" });
+        console.log("Generated Token:", token); // ✅ Debugging
 
         res.json({ token, user });
 
     } catch (error) {
         console.error("🔥 Login Error:", error);
-        res.status(500).json({ message: "An error occurred during login" });
+        res.status(500).json({ message: "Server error" });
     }
 };
+
 
 
 module.exports = { register, login }; // ✅ Ensure both functions are exported
