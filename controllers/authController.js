@@ -27,31 +27,36 @@ const login = async (req, res) => {
 
         const { email, password } = req.body;
         if (!email || !password) {
+            console.log("❌ Missing email or password");
             return res.status(400).json({ message: "Email and password are required" });
         }
 
-        const user = await Staff.findOne({ email });
+        const user = await Student.findOne({ email });
         console.log("👤 User found:", user);
 
         if (!user) {
-            return res.status(400).json({ message: "Invalid credentials" });
+            console.log("❌ Invalid email");
+            return res.status(400).json({ message: "❌ Invalid email or password" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         console.log("🔑 Password match:", isMatch);
 
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
+            console.log("❌ Invalid password");
+            return res.status(400).json({ message: "❌ Invalid email or password" });
         }
 
-        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ id: user._id, role: "student" }, process.env.JWT_SECRET, { expiresIn: "3h" });
         console.log("✅ Token Generated:", token);
 
         res.json({ token, user });
+
     } catch (error) {
         console.error("🔥 Login Error:", error);
         res.status(500).json({ message: "An error occurred during login" });
     }
 };
+
 
 module.exports = { register, login }; // ✅ Ensure both functions are exported
