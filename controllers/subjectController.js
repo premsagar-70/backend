@@ -43,3 +43,13 @@ exports.addSubject = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
+exports.getAllSubjects = async (req, res) => {
+    try {
+        const subjects = await Subject.find().populate("teacher", "name");
+        res.json(subjects);
+    } catch (error) {
+        console.error("❌ Error fetching subjects:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
