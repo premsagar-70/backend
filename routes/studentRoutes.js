@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post("/add", authMiddleware, addStudent);
 router.get("/all", authMiddleware, getStudents);
+router.get("/me", authMiddleware, getStudentProfile);
 router.post("/login", login); // ✅ Add this line to define the login route
 
 module.exports = router;
