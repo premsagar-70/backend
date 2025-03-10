@@ -1,5 +1,5 @@
 const express = require("express");
-const { addStudent, getStudents, login } = require("../controllers/studentController"); // ✅ Import login function
+const { getStudentProfile, addStudent, getStudents, login } = require("../controllers/studentController"); // ✅ Import login function
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
