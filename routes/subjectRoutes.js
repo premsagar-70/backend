@@ -1,9 +1,10 @@
 const express = require("express");
-const { getSubjects } = require("../controllers/subjectController"); // ✅ Make sure this path is correct
+const { addSubject, getAllSubjects } = require("../controllers/subjectController");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/", authMiddleware, getSubjects); // ✅ Ensure function name matches
+router.post("/", authMiddleware, addSubject); // ✅ This must exist!
+router.get("/", authMiddleware, getAllSubjects); // ✅ Get all subjects
 
 module.exports = router;
