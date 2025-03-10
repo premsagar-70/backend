@@ -53,3 +53,17 @@ exports.getAllSubjects = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
+exports.getSubjectsForTeacher = async (req, res) => {
+    try {
+        const teacherId = req.user.id; // Get teacher's ID from token
+
+        // Find subjects assigned to the teacher
+        const subjects = await Subject.find({ teacher: teacherId });
+
+        res.json(subjects);
+    } catch (error) {
+        console.error("Error fetching subjects for teacher:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
