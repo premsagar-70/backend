@@ -56,20 +56,22 @@ exports.addStudent = async (req, res) => {
             return res.status(400).json({ error: "Student already exists" });
         }
 
-        // ✅ Hash the password before saving
+        // ✅ Make sure to properly declare `hashedPassword`
+        console.log("🔑 Hashing password...");
         const hashedPassword = await bcrypt.hash(password, 10);
+        console.log("✅ Password hashed successfully.");
 
         // ✅ Store role correctly, default to "student"
         const newStudent = new Student({
             name,
             rollNumber,
             email,
-            password: hashedPassword,
+            password: hashedPassword,  // 🛠️ Use the correctly declared `hashedPassword`
             department,
             year,
             semester,
             subjects,
-            role: role || "student"  // ✅ This ensures the role is saved
+            role: role || "student"  // ✅ Store role as "student" if not provided
         });
 
         await newStudent.save();
