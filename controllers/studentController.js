@@ -48,7 +48,7 @@ exports.addStudent = async (req, res) => {
             name,
             rollNumber,
             email,
-            password,
+            password: hashedPassword,
             department,
             year,
             semester,
