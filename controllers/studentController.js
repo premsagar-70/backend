@@ -39,19 +39,16 @@ exports.login = async (req, res) => {
 exports.addStudent = async (req, res) => {
     try {
         const { name, rollNumber, email, password, department, year, semester, subjects } = req.body;
-        
+
         if (!name || !rollNumber || !email || !password || !department || !year || !semester) {
             return res.status(400).json({ message: "All fields are required" });
         }
-
-        // ✅ Hash the password before saving
-        const hashedPassword = await bcrypt.hash(password, 10);
 
         const newStudent = new Student({
             name,
             rollNumber,
             email,
-            password: hashedPassword,  // ✅ Save hashed password
+            password,
             department,
             year,
             semester,
@@ -61,9 +58,8 @@ exports.addStudent = async (req, res) => {
 
         await newStudent.save();
         res.status(201).json({ message: "Student added successfully" });
-
     } catch (error) {
-        console.error("🔥 Error adding student:", error);
+        console.error("❌ Error adding student:", error);
         res.status(500).json({ message: "Server error" });
     }
 };
