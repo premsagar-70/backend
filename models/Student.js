@@ -9,6 +9,7 @@ const StudentSchema = new mongoose.Schema({
     year: { type: Number, required: true },
     semester: { type: Number, required: true },
     subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Subject" }],
+    role: { type: String, default: "student" }  // ✅ Default role is student
 });
 
 module.exports = mongoose.model("Student", StudentSchema);
