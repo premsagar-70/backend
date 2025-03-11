@@ -56,6 +56,7 @@ exports.addStudent = async (req, res) => {
             year,
             semester,
             subjects,
+            role: "student",  // ✅ Explicitly set role to student
         });
 
         await newStudent.save();
