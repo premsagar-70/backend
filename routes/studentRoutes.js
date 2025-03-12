@@ -4,7 +4,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.post("/add", authMiddleware, addStudent);
+router.post("/add", addStudent); // Ensure it's a POST request, not GET
 router.get("/all", authMiddleware, getStudents);
 router.get("/me", authMiddleware, getStudentProfile);
 router.post("/login", login); // ✅ Add this line to define the login route
